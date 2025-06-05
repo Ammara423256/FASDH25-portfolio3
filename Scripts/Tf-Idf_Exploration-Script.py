@@ -53,16 +53,16 @@ avg_similarity_by_both = sorted_df.groupby(['month_1', 'month_2'])['similarity']
 avg_similarity_by_both = avg_similarity_by_both.reset_index()
 
 
-# Get the current script directory
+# Get the current script directory                                               #From chatgpt, refrence:Chat-4
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Build the path to the outputs directory (one level up)
+# Build the path to the outputs directory (one level up)                        #From chatgpt, refrence:Chat-4
 output_dir = os.path.abspath(os.path.join(current_dir, '..', 'outputs'))
 
-# Ensure the outputs directory exists
+# Ensure the outputs directory exists                                            #From chatgpt, refrence:Chat-4
 os.makedirs(output_dir, exist_ok=True)
 
-# Define the full path to the CSV file
+# Define the full path to the CSV file                                            #From chatgpt, refrence:Chat-4
 csv_output_path = os.path.join(output_dir, "Average similarity of pairs per month.csv")
 
 # Save the DataFrame as a CSV
@@ -77,8 +77,8 @@ fig = px.scatter(
     avg_similarity_by_both,
     x='month_1',
     y='month_2',
-    size='similarity',          # size of points representsing similarity value
-    color='similarity',         # color intensity representing similarity value
+    size='similarity',          
+    color='similarity'
     color_continuous_scale='Viridis',
     title='Average similarity of pairs per month',
     labels={'month_1': 'Month 1', 'month_2': 'Month2 ', 'similarity': 'Avg Similarity'}
@@ -88,7 +88,7 @@ fig.show()
 
 
 # Define full path to output file
-output_file = os.path.join(output_dir, "Average similarity of pairs per month.html")
+output_file = os.path.join(output_dir, "Average similarity of pairs per month.html")       #from chatgpt, reference:chat-4
 
 # Save Plotly figure
 fig.write_html(output_file)

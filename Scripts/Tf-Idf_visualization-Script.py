@@ -80,7 +80,6 @@ fig = px.box(
     points='all'                  # show all individual similarity points
 )
 
-#Improve layout
 fig.update_layout(
     xaxis_tickangle=-45,          # rotate x-axis labels for readability
     yaxis=dict(range=[0, 1]),     # setting similarity scores from o to 1
@@ -91,16 +90,16 @@ fig.update_layout(
 #Show plot
 fig.show()
 
-# Get the directory where the script is located
+# Get the directory where the script is located                                 #from chatgpt, reference:chat-4
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Go up one level and into the outputs folder
+# Go up one level and into the outputs folder                                   #from chatgpt, reference:chat-4
 output_dir = os.path.abspath(os.path.join(current_dir, '..', 'outputs'))
 
-# Ensure directory exists
+# Ensure directory exists                                                        #from chatgpt, reference:chat-4
 os.makedirs(output_dir, exist_ok=True)
 
-# Define full path to output file
+# Define full path to output file                                                  #from chatgpt, reference:chat-4
 output_file = os.path.join(output_dir, "Distribution of Articles Similarities with Same Topic Per Month.html")
 
 # Save Plotly figure
@@ -119,7 +118,6 @@ fig = px.line(
     labels={'month': 'Month', 'similarity': 'Average Similarity'}
 )
 
-#Customize layout (optional)
 fig.update_layout(
     xaxis_title='Month',
     yaxis_title='Average Similarity',
@@ -131,7 +129,7 @@ fig.update_layout(
 fig.show()
 
 # Define full path to output file
-output_file2 = os.path.join(output_dir, "Monthly Average TF-idf similarity of  Same Topic Pairs.html")
+output_file2 = os.path.join(output_dir, "Monthly Average TF-idf similarity of  Same Topic Pairs.html") #from chatgpt, reference:chat-4
 
 # Save Plotly figure
 fig.write_html(output_file2)
