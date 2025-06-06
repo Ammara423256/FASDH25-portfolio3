@@ -1,10 +1,11 @@
 import pandas as pd
 import plotly.express as px
+import os
 
 # Load the CSV file
 df = pd.read_csv("topic-model.csv")
 
-# Display column names and preview selected topic columns to columns and unique values
+# Display column names and preview selected topic columns
 print(df.columns)
 print(df[['Topic', 'topic_1', 'topic_2', 'topic_3', 'topic_4']].head())
 print("Months available:", df['month'].unique())
@@ -13,20 +14,20 @@ print("Years available:", df['year'].unique())
 # Filter the dataset to include only articles from October to December 2023
 df_filtered = df[(df['year'] == 2023) & (df['month'].isin([10, 11, 12]))].copy()
 
-# Combine the top 4 topic words into a single string label for each article                             [AI (Conversation 2) + Class knowledge] 
+# Combine the top 4 topic words into a single string label for each article
 df_filtered["Topic_label"] = df_filtered["topic_1"].astype(str)
-df_filtered["Topic_label"] = df_filtered["Topic_label"] + ", " + df_filtered["topic_2"].astype(str)
-df_filtered["Topic_label"] = df_filtered["Topic_label"] + ", " + df_filtered["topic_3"].astype(str)
-df_filtered["Topic_label"] = df_filtered["Topic_label"] + ", " + df_filtered["topic_4"].astype(str)
+df_filtered["Topic_label"] += ", " + df_filtered["topic_2"].astype(str)
+df_filtered["Topic_label"] += ", " + df_filtered["topic_3"].astype(str)
+df_filtered["Topic_label"] += ", " + df_filtered["topic_4"].astype(str)
 
-#Aggregate the data: sum article counts by month and topic label 
+# Aggregate the data: sum article counts by month and topic label
 topic_month_counts = df_filtered.groupby(['month', 'Topic_label'], as_index=False)['Count'].sum()
 
-# Map month numbers to names for better readability in plots
+# Map month numbers to names
 month_map = {10: 'Oct', 11: 'Nov', 12: 'Dec'}
-topic_month_counts['Month'] = topic_month_counts['month'].map(month_map)                  # [AI Code (Conversation 3)] 
+topic_month_counts['Month'] = topic_month_counts['month'].map(month_map)
 
-# Plot total article counts for each topic label across the selected months
+# Plot article counts by topic and month
 fig = px.bar(
     topic_month_counts,
     x='Month',
@@ -36,6 +37,14 @@ fig = px.bar(
     title='Article Counts by Topic and Month (Oct-Dec 2023)'
 )
 fig.show()
+
+# Save the first figure
+current_dir = os.path.dirname(os.path.abspath(__file__))
+output_dir = os.path.abspath(os.path.join(current_dir, '..', 'outputs'))
+os.makedirs(output_dir, exist_ok=True)
+
+output_file = os.path.join(output_dir, 'Article Counts by Topic and Month (Oct-Dec 2023).html')
+fig.write_html(output_file)
 
 # Define keyword lists for theme classification
 people_keywords = [
@@ -52,7 +61,7 @@ power_keywords = [
     "settlement", "detention", "court"
 ]
 
-# Reshape the topic columns into a long format to simplify keyword filtering     [(Mofified the code using an example from AI (conversation 4)]
+# Reshape the topic columns into a long format
 df_melted = df_filtered.melt(
     id_vars=['month', 'year', 'Count'],
     value_vars=['topic_1', 'topic_2', 'topic_3', 'topic_4'],
@@ -60,17 +69,17 @@ df_melted = df_filtered.melt(
     value_name='topic_word'
 )
 
-# Keep only rows where the topic word matches one of the defined keywords
+# Filter rows where topic word matches keywords
 df_filtered_keywords = df_melted[df_melted['topic_word'].isin(people_keywords + power_keywords)].copy()
 
-# Assign a theme label ("People" or "Power") to each matched keyword                      (Used concepts from future coder) 
+# Assign theme labels
 def assign_theme(word):
     if word in people_keywords:
         return 'People'
     elif word in power_keywords:
         return 'Power'
     else:
-        return 'Other'  # just in case
+        return 'Other'
 
 df_filtered_keywords['Theme'] = df_filtered_keywords['topic_word'].apply(assign_theme)
 
@@ -78,7 +87,7 @@ df_filtered_keywords['Theme'] = df_filtered_keywords['topic_word'].apply(assign_
 theme_counts = df_filtered_keywords.groupby(['month', 'Theme'], as_index=False)['Count'].sum()
 theme_counts['Month'] = theme_counts['month'].map(month_map)
 
-# Plot article counts for each theme (People vs Power) across the selected months
+# Plot article counts by theme
 fig_theme = px.bar(
     theme_counts,
     x='Month',
@@ -90,6 +99,6 @@ fig_theme = px.bar(
 )
 fig_theme.show()
 
-# Save plots as interactive HTML files
-fig.write_html("topic_counts_by_month.html")
-fig_theme.write_html("theme_counts_by_month.html")
+# Save the second figure
+output_file_theme = os.path.join(output_dir, 'Article Counts by Theme (People vs Power) Oct–Dec 2023.html')
+fig_theme.write_html(output_file_theme)
