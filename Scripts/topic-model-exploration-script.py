@@ -60,7 +60,7 @@ print(df[df['topic_1'] == 'bank'][['topic_2', 'topic_3', 'topic_4']].value_count
 
 # Show sample article titles from topic_1 = 'bank'
 print("\n Sample titles for topic_1 = 'bank':")
-print(df[df['topic_1'] == 'bank']['title'].sample(5, random_state=1)) # Last part of code taken from AI (Conversation 2) 
+print(df[df['topic_1'] == 'bank']['title'].sample(5, random_state=1)) # Last part of code taken from AI (Conversation 2)
 
 # Create a proper 'year_month' datetime column
 df["year_month"] = pd.to_datetime(dict(year=df["year"], month=df["month"], day=1))
@@ -89,8 +89,22 @@ top_5 = df["topic_label"].value_counts().head(5).index
 # Filter only those top 5 topics for visualization
 final_topics = topic_monthly[topic_monthly["topic_label"].isin(top_5)].copy()
 
-# Save to CSV
-final_topics.to_csv("outputs/final_topic_relative_freq.csv", index=False)
+
+# Get the current script directory                                              
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Build the path to the outputs directory (one level up)                        #From chatgpt, refrence:Chat-4
+output_dir = os.path.abspath(os.path.join(current_dir, '..', 'outputs'))
+
+# Ensure the outputs directory exists                                            #From chatgpt, refrence:Chat-4
+os.makedirs(output_dir, exist_ok=True)
+
+# Define the full path to the CSV file                                            #From chatgpt, refrence:Chat-4
+csv_output_path = os.path.join(output_dir, "final_topic_relative_freq.csv")
+
+# Save the DataFrame as a CSV
+final_topics.to_csv(csv_output_path, index=False)
+
 
 # Preview
 print("\nRelative Frequency of Top 5 Topics Per Month:")
@@ -126,7 +140,13 @@ humanitarian_monthly['theme'] = 'humanitarian_count'
 
 # Combine both datasets
 combined_monthly = pd.concat([conflict_monthly, humanitarian_monthly])
-combined_monthly.to_csv("outputs/conflict_vs_aid_trends.csv", index=False)
+
+# Define the full path to the CSV file                                            #From chatgpt, refrence:Chat-4
+csv_output_path = os.path.join(output_dir, "conflict_vs_aid_trends.csv")
+
+# Save the DataFrame as a CSV
+combined_monthly.to_csv(csv_output_path, index=False)
+
 
 # Manual theme mapping for interpretation and later visualization (AI conversation 1)
 theme_map = {
@@ -139,4 +159,3 @@ theme_map = {
 df['theme'] = df['Topic'].map(theme_map)
 
 print("\nTheme mapping sample:")
-
