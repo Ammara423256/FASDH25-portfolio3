@@ -1,18 +1,18 @@
-# visualize_topic_model.py
 
 import pandas as pd
 import plotly.express as px
+import os
 
 # Load preprocessed datasets
-df_top = pd.read_csv("outputs/final_topic_relative_freq.csv")
-combined_monthly = pd.read_csv("outputs/conflict_vs_aid_trends.csv")
+df_top = pd.read_csv("final_topic_relative_freq.csv")
+combined_monthly = pd.read_csv("conflict_vs_aid_trends.csv")
 
 # Convert 'year_month' to datetime if it's not already
 df_top['year_month'] = pd.to_datetime(df_top['year_month'])
 combined_monthly['year_month'] = pd.to_datetime(combined_monthly['year_month'])
 
 # Create a grouped bar chart for topic frequency by month
-fig1 = px.bar(
+fig = px.bar(
     df_top,
     x="year_month",
     y="count",
@@ -26,12 +26,25 @@ fig1 = px.bar(
     },
     height=500
 )
-fig1.update_layout(template="plotly_white", xaxis=dict(dtick="M1"))
-fig1.write_html("outputs/monthly_top5_topics.html")
-fig1.show()
+
+fig.show()
+# Get the directory where the script is located                                
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Go up one level and into the outputs folder                                  
+output_dir = os.path.abspath(os.path.join(current_dir, '..', 'Outputs'))
+
+# Ensure directory exists                                                      
+os.makedirs(output_dir, exist_ok=True)
+
+# Define full path to output file                                                
+output_file = os.path.join(output_dir, "monthly_top5_topics.html")
+
+# Save Plotly figure
+fig.write_html(output_file)
 
 # Plot the monthly trend: Conflict vs Humanitarian Themes
-fig2 = px.bar(
+fig=px.bar(
     combined_monthly,
     x='year_month',
     y='count',
@@ -45,8 +58,11 @@ fig2 = px.bar(
     },
     height=500
 )
-fig2.update_layout(template="plotly_white", xaxis=dict(dtick="M1"))
-fig2.write_html("outputs/conflict_vs_humanitarian.html")
-fig2.show()
+fig.update_layout(template="plotly_white", xaxis=dict(dtick="M1"))
 
+fig.show()
+# Define full path to output file                                                 
+output_file = os.path.join(output_dir, "conflict_vs_humanitarian.html")
 
+# Save Plotly figure
+fig.write_html(output_file)
